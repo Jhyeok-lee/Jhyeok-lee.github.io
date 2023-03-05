@@ -1,0 +1,58 @@
+[
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "이재혁 (Jae Hyeok Lee)"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Jhyeok-lee.github.io",
+    "section": "",
+    "text": "Pytorch Quickstart\n\n\n\n\n\n\n\npytorch\n\n\npytorch-tutorial\n\n\n\n\n\n\n\n\n\n\n\nMar 5, 2023\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/pytorch-quickstart/quickstart.html",
+    "href": "posts/pytorch-quickstart/quickstart.html",
+    "title": "Pytorch Quickstart",
+    "section": "",
+    "text": "출처 : pytorch 튜토리얼\n이 포스트는 머신러닝의 일반적인 작업에 대한 pytorch api를 살펴본다."
+  },
+  {
+    "objectID": "posts/pytorch-quickstart/quickstart.html#working-with-data",
+    "href": "posts/pytorch-quickstart/quickstart.html#working-with-data",
+    "title": "Pytorch Quickstart",
+    "section": "Working with data",
+    "text": "Working with data\npytorch에는 데이터를 다루는데 2가지 기본 요소가 있다: torch.utils.data.DataLoader와 torch.utils.data.Dataset. Dataset은 샘플과 그에 대응되는 레이블을 저장하고, DataLoader는 Dataset의 python iterable 객체이다.\n\nimport torch\nfrom torch import nn\nfrom torch.utils.data import DataLoader\nfrom torchvision import datasets\nfrom torchvision.transforms import ToTensor\n\npytorch는 TorchText, TorchVision, TorchAudio와 같은 도메인에 특화한 라이브러리를 제공하고 각각 데이터셋을 포함한다. 이 튜토리얼에서는 TorchVision 데이터셋을 사용한다.\ntorchvision.datasets 모듈은 CIFAR, COCO (모든 리스트)와 같은 실제 vision 데이터의 Datasets 객체를 포함하고 있다. 이 튜토리얼에서는 FashionMNIST dataset을 사용한다. 모든 TorchVision Dataset은 두 가지 arguments를 포함한다: 샘플과 레이블 각각 수정하기 위한 transform과 target_transform.\n\n# Download training data from open datasets.\ntraining_data = datasets.FashionMNIST(\n    root=\"data\",\n    train=True,\n    download=True,\n    transform=ToTensor(),\n)\n\n# Download test data from open datasets.\ntest_data = datasets.FashionMNIST(\n    root=\"data\",\n    train=False,\n    download=True,\n    transform=ToTensor(),\n)\n\nDataLoader의 argument로 Dataset을 전달한다. DataLoader는 dataset의 iterable을 감싸고, 자동 배치, 샘플링, 셔플링 및 멀티프로세싱을 지원한다. 배치 사이즈를 64로 지정하면 dataloader는 64개의 피쳐와 레이블 배치를 리턴한다.\n\nbatch_size = 64\n\n# Create data loaders.\ntrain_dataloader = DataLoader(training_data, batch_size=batch_size)\ntest_dataloader = DataLoader(test_data, batch_size=batch_size)\n\nfor X, y in test_dataloader:\n    print(f\"Shape of X [N, C, H, W]: {X.shape}\")\n    print(f\"Shape of y: {y.shape} {y.dtype}\")\n    break\n\nShape of X [N, C, H, W]: torch.Size([64, 1, 28, 28])\nShape of y: torch.Size([64]) torch.int64"
+  },
+  {
+    "objectID": "posts/pytorch-quickstart/quickstart.html#creating-models",
+    "href": "posts/pytorch-quickstart/quickstart.html#creating-models",
+    "title": "Pytorch Quickstart",
+    "section": "Creating Models",
+    "text": "Creating Models\npytorch에서 뉴럴 네트워크를 정의하려면 nn.Module을 상속하는 class를 만들어야한다. __init__ function에서 네트워크의 레이어를 정의하고 forward function에서 데이터가 어떻게 통과할 지 정의한다. 연산을 가속화하기 위해 GPU를 사용할 수 있다.\n자세한 내용은 building neural networks in PyTorch 참고.\n\n# Get cpu or gpu device for training.\ndevice = \"cuda\" if torch.cuda.is_available() else \"mps\" if torch.backends.mps.is_available() else \"cpu\"\nprint(f\"Using {device} device\")\n\n# Define model\nclass NeuralNetwork(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.flatten = nn.Flatten()\n        self.linear_relu_stack = nn.Sequential(\n            nn.Linear(28*28, 512),\n            nn.ReLU(),\n            nn.Linear(512, 512),\n            nn.ReLU(),\n            nn.Linear(512, 10)\n        )\n\n    def forward(self, x):\n        x = self.flatten(x)\n        logits = self.linear_relu_stack(x)\n        return logits\n\nmodel = NeuralNetwork().to(device)\nprint(model)\n\nUsing cuda device\nNeuralNetwork(\n  (flatten): Flatten(start_dim=1, end_dim=-1)\n  (linear_relu_stack): Sequential(\n    (0): Linear(in_features=784, out_features=512, bias=True)\n    (1): ReLU()\n    (2): Linear(in_features=512, out_features=512, bias=True)\n    (3): ReLU()\n    (4): Linear(in_features=512, out_features=10, bias=True)\n  )\n)"
+  },
+  {
+    "objectID": "posts/pytorch-quickstart/quickstart.html#optimizing-the-model-parameters",
+    "href": "posts/pytorch-quickstart/quickstart.html#optimizing-the-model-parameters",
+    "title": "Pytorch Quickstart",
+    "section": "Optimizing the Model Parameters",
+    "text": "Optimizing the Model Parameters\n모델을 학습하기 위해 loss function과 optimizer가 필요하다.\n\nloss_fn = nn.CrossEntropyLoss()\noptimizer = torch.optim.SGD(model.parameters(), lr=1e-3)\n\n한번의 학습 루프에서 모델은 학습 dataset에 대해 predictions를 만들고, 모델의 parameters를 조정하기 위해 prediction error를 backpropagate를 한다.\n\ndef train(dataloader, model, loss_fn, optimizer):\n    size = len(dataloader.dataset)\n    model.train()\n    for batch, (X, y) in enumerate(dataloader):\n        X, y = X.to(device), y.to(device)\n\n        # Compute prediction error\n        pred = model(X)\n        loss = loss_fn(pred, y)\n\n        # Backpropagation\n        optimizer.zero_grad()\n        loss.backward()\n        optimizer.step()\n\n        if batch % 100 == 0:\n            loss, current = loss.item(), (batch + 1) * len(X)\n            print(f\"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]\")\n\n학습이 잘 되고 있는지 test dataset에 대해 모델의 성능 측정도 해야한다.\n\ndef test(dataloader, model, loss_fn):\n    size = len(dataloader.dataset)\n    num_batches = len(dataloader)\n    model.eval()\n    test_loss, correct = 0, 0\n    with torch.no_grad():\n        for X, y in dataloader:\n            X, y = X.to(device), y.to(device)\n            pred = model(X)\n            test_loss += loss_fn(pred, y).item()\n            correct += (pred.argmax(1) == y).type(torch.float).sum().item()\n    test_loss /= num_batches\n    correct /= size\n    print(f\"Test Error: \\n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \\n\")\n\n학습은 여러번 실행된다. 각 epoch마다 모델은 더 나은 predictions를 위해 parameters를 조정한다. epoch 마다 accuracy의 증가와 loss의 감소를 볼 수 있다.\n\nepochs = 5\nfor t in range(epochs):\n    print(f\"Epoch {t+1}\\n-------------------------------\")\n    train(train_dataloader, model, loss_fn, optimizer)\n    test(test_dataloader, model, loss_fn)\nprint(\"Done!\")"
+  },
+  {
+    "objectID": "posts/pytorch-quickstart/quickstart.html#saving-models",
+    "href": "posts/pytorch-quickstart/quickstart.html#saving-models",
+    "title": "Pytorch Quickstart",
+    "section": "Saving Models",
+    "text": "Saving Models\n모델을 저장하는 방법 중 하나는 내부 상태 dictionary를 직렬화하는 것이다. 이 dictionary에는 모델 paramters를 포함하고 있다.\n\ntorch.save(model.state_dict(), \"model.pth\")\nprint(\"Saved PyTorch Model State to model.pth\")\n\nSaved PyTorch Model State to model.pth"
+  },
+  {
+    "objectID": "posts/pytorch-quickstart/quickstart.html#loading-models",
+    "href": "posts/pytorch-quickstart/quickstart.html#loading-models",
+    "title": "Pytorch Quickstart",
+    "section": "Loading Models",
+    "text": "Loading Models\n모델을 load하려면 모델의 구조를 다시 만들고 상태 dictionary를 load한다.\n더 자세한 내용은 Saving & Loading your model 참고.\n\nmodel = NeuralNetwork()\nmodel.load_state_dict(torch.load(\"model.pth\"))\n\n<All keys matched successfully>\n\n\n\nclasses = [\n    \"T-shirt/top\",\n    \"Trouser\",\n    \"Pullover\",\n    \"Dress\",\n    \"Coat\",\n    \"Sandal\",\n    \"Shirt\",\n    \"Sneaker\",\n    \"Bag\",\n    \"Ankle boot\",\n]\n\nmodel.eval()\nx, y = test_data[0][0], test_data[0][1]\nwith torch.no_grad():\n    pred = model(x)\n    predicted, actual = classes[pred[0].argmax(0)], classes[y]\n    print(f'Predicted: \"{predicted}\", Actual: \"{actual}\"')\n\nPredicted: \"Ankle boot\", Actual: \"Ankle boot\""
+  }
+]
