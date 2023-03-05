@@ -11,7 +11,7 @@
     "href": "index.html",
     "title": "Jhyeok-lee.github.io",
     "section": "",
-    "text": "Pytorch Quickstart\n\n\n\n\n\n\n\npytorch\n\n\npytorch-tutorial\n\n\n\n\n\n\n\n\n\n\n\nMar 5, 2023\n\n\n\n\n\n\nNo matching items"
+    "text": "Pytorch Quickstart\n\n\n\n\n\n\n\npytorch\n\n\npytorch-tutorial\n\n\n\n\n\n\n\n\n\n\n\nMar 5, 2023\n\n\n\n\n\n\n\n\nPytorch Tensors\n\n\n\n\n\n\n\npytorch\n\n\npytorch-tutorial\n\n\npytorch-tensor\n\n\n\n\n\n\n\n\n\n\n\nMar 5, 2023\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/pytorch-quickstart/quickstart.html",
@@ -54,5 +54,40 @@
     "title": "Pytorch Quickstart",
     "section": "Loading Models",
     "text": "Loading Models\n모델을 load하려면 모델의 구조를 다시 만들고 상태 dictionary를 load한다.\n더 자세한 내용은 Saving & Loading your model 참고.\n\nmodel = NeuralNetwork()\nmodel.load_state_dict(torch.load(\"model.pth\"))\n\n<All keys matched successfully>\n\n\n\nclasses = [\n    \"T-shirt/top\",\n    \"Trouser\",\n    \"Pullover\",\n    \"Dress\",\n    \"Coat\",\n    \"Sandal\",\n    \"Shirt\",\n    \"Sneaker\",\n    \"Bag\",\n    \"Ankle boot\",\n]\n\nmodel.eval()\nx, y = test_data[0][0], test_data[0][1]\nwith torch.no_grad():\n    pred = model(x)\n    predicted, actual = classes[pred[0].argmax(0)], classes[y]\n    print(f'Predicted: \"{predicted}\", Actual: \"{actual}\"')\n\nPredicted: \"Ankle boot\", Actual: \"Ankle boot\""
+  },
+  {
+    "objectID": "posts/pytorch-tensors/pytorch-tensors.html",
+    "href": "posts/pytorch-tensors/pytorch-tensors.html",
+    "title": "Pytorch Tensors",
+    "section": "",
+    "text": "출처 : Pytorch Tensors\nTensor는 배열과 행렬과 비슷한 특별한 자료구조이다. PyTorch에서 모델의 input, output과 parameter를 인코딩하는데 tensor를 사용한다.\nTensor는 Numpy의 ndarrays와 비슷하지만, tensor는 GPU 가속이 가능하다. 또 tensor는 자동 미분(automatic differentiation)에 최적화되어있다."
+  },
+  {
+    "objectID": "posts/pytorch-tensors/pytorch-tensors.html#initializing-a-tensor",
+    "href": "posts/pytorch-tensors/pytorch-tensors.html#initializing-a-tensor",
+    "title": "Pytorch Tensors",
+    "section": "Initializing a Tensor",
+    "text": "Initializing a Tensor\nTensor는 다양한 방법으로 초기화할 수 있다. ### Directly from data Data로 부터 바로 tensor를 만들 수 있다. 여기서 데이터 타입은 자동으로 추론된다.\n\ndata = [[1, 2],[3, 4]]\nx_data = torch.tensor(data)\n\n\nFrom a NumPy array\nNumPy array로 부터 tensor를 만들 수 있다. (반대 방향도 가능)\n\nnp_array = np.array(data)\nx_np = torch.from_numpy(np_array)\n\n\n\nFrom another tensor:\n다른 tensor의 속성(shape, datatype)으로 부터 새 tensor를 만들 수 있다.\n\nx_ones = torch.ones_like(x_data) # retains the properties of x_data\nprint(f\"Ones Tensor: \\n {x_ones} \\n\")\n\nx_rand = torch.rand_like(x_data, dtype=torch.float) # overrides the datatype of x_data\nprint(f\"Random Tensor: \\n {x_rand} \\n\")\n\nOnes Tensor: \n tensor([[1, 1],\n        [1, 1]]) \n\nRandom Tensor: \n tensor([[0.3985, 0.1358],\n        [0.7151, 0.1586]]) \n\n\n\n\n\nWith random or constant values:\nshape를 지정해서 tensor를 만들 수 있다.\n\nshape = (2,3,)\nrand_tensor = torch.rand(shape)\nones_tensor = torch.ones(shape)\nzeros_tensor = torch.zeros(shape)\n\nprint(f\"Random Tensor: \\n {rand_tensor} \\n\")\nprint(f\"Ones Tensor: \\n {ones_tensor} \\n\")\nprint(f\"Zeros Tensor: \\n {zeros_tensor}\")\n\nRandom Tensor: \n tensor([[0.9729, 0.5650, 0.1026],\n        [0.8679, 0.1286, 0.8256]]) \n\nOnes Tensor: \n tensor([[1., 1., 1.],\n        [1., 1., 1.]]) \n\nZeros Tensor: \n tensor([[0., 0., 0.],\n        [0., 0., 0.]])"
+  },
+  {
+    "objectID": "posts/pytorch-tensors/pytorch-tensors.html#attributes-of-a-tensor",
+    "href": "posts/pytorch-tensors/pytorch-tensors.html#attributes-of-a-tensor",
+    "title": "Pytorch Tensors",
+    "section": "Attributes of a Tensor",
+    "text": "Attributes of a Tensor\nTensor 속성으로 shape, datatype, 그리고 어느 device에 저장되어있는 지가 있다.\n\ntensor = torch.rand(3,4)\n\nprint(f\"Shape of tensor: {tensor.shape}\")\nprint(f\"Datatype of tensor: {tensor.dtype}\")\nprint(f\"Device tensor is stored on: {tensor.device}\")\n\nShape of tensor: torch.Size([3, 4])\nDatatype of tensor: torch.float32\nDevice tensor is stored on: cpu"
+  },
+  {
+    "objectID": "posts/pytorch-tensors/pytorch-tensors.html#operations-on-tensors",
+    "href": "posts/pytorch-tensors/pytorch-tensors.html#operations-on-tensors",
+    "title": "Pytorch Tensors",
+    "section": "Operations on Tensors",
+    "text": "Operations on Tensors\nTensor의 연산으로 산술(arithmetic), 선형대수, 행렬 조작(transposing, indexing, slicing), 샘플링 등 100개가 넘는 연산이 있다.\n더 자세한 건 여기 참고\n각 연산은 GPU에서 실행할 수 있다. 기본값으로 tensor는 CPU에서 생성된다. GPU를 사용하려면 명시적으로 .to 메소드를 사용해 tensor를 GPU로 이동시켜야 한다(GPU를 사용할 수 있는 지 체크한 이후에). 거대한 tensor를 devices 간에 복사하는 건 큰 비용이 드는 것을 명심해야한다.\n\n# We move our tensor to the GPU if available\nif torch.cuda.is_available():\n    tensor = tensor.to(\"cuda\")\n\n몇몇 연산을 살펴보는데, NumPy API에 친숙하다면 Tensor API는 사용하기 쉬울 것이다. ### Standard numpy-like indexing and slicing:\n\ntensor = torch.ones(4, 4)\nprint(f\"First row: {tensor[0]}\")\nprint(f\"First column: {tensor[:, 0]}\")\nprint(f\"Last column: {tensor[..., -1]}\")\ntensor[:,1] = 0\nprint(tensor)\n\nFirst row: tensor([1., 1., 1., 1.])\nFirst column: tensor([1., 1., 1., 1.])\nLast column: tensor([1., 1., 1., 1.])\ntensor([[1., 0., 1., 1.],\n        [1., 0., 1., 1.],\n        [1., 0., 1., 1.],\n        [1., 0., 1., 1.]])\n\n\n\nJoining tensors\ntorch.cat을 사용하면 tensor들의 시퀀스를 합칠(concatenate) 수 있다. torch.stack은 torch.cat과 다른 합치는 연산이다.\n\nt1 = torch.cat([tensor, tensor, tensor], dim=1)\nprint(t1)\n\ntensor([[1., 0., 1., 1., 1., 0., 1., 1., 1., 0., 1., 1.],\n        [1., 0., 1., 1., 1., 0., 1., 1., 1., 0., 1., 1.],\n        [1., 0., 1., 1., 1., 0., 1., 1., 1., 0., 1., 1.],\n        [1., 0., 1., 1., 1., 0., 1., 1., 1., 0., 1., 1.]])\n\n\n\n\nArithmetic operations\n\n# This computes the matrix multiplication between two tensors.\n# y1, y2, y3 will have the same value\n# ``tensor.T`` returns the transpose of a tensor\ny1 = tensor @ tensor.T\ny2 = tensor.matmul(tensor.T)\n\ny3 = torch.rand_like(y1)\ntorch.matmul(tensor, tensor.T, out=y3)\n\n\n# This computes the element-wise product. z1, z2, z3 will have the same value\nz1 = tensor * tensor\nz2 = tensor.mul(tensor)\n\nz3 = torch.rand_like(tensor)\ntorch.mul(tensor, tensor, out=z3)\n\ntensor([[1., 0., 1., 1.],\n        [1., 0., 1., 1.],\n        [1., 0., 1., 1.],\n        [1., 0., 1., 1.]])\n\n\n\n\nSingle-element tensors\n만약에 한 개의 원소를 가진 tensor가 있다면, 예를 들어 모든 값들을 집계해서 하나의 값을 가진 tensor를 만든다면, item()을 사용해서 Python 값(variable)로 변환할 수 있다.\n\nagg = tensor.sum()\nagg_item = agg.item()\nprint(agg_item, type(agg_item))\n\n12.0 <class 'float'>\n\n\n\n\nIn-place operations\n연산의 결과로 피연산자(operand)에 저장되는 것을 in-place라 한다. inplace 연산은 _ suffix로 나타낸다. 예: x.copey_(y), x.t_() 는 x를 바꾼다. In-place 연산은 메모리를 아끼지만, 미분을 계산하는데 문제가 생길 수 있다. 그래서 사용이 권장되지 않는다.\n\nprint(f\"{tensor} \\n\")\ntensor.add_(5)\nprint(tensor)\n\ntensor([[1., 0., 1., 1.],\n        [1., 0., 1., 1.],\n        [1., 0., 1., 1.],\n        [1., 0., 1., 1.]]) \n\ntensor([[6., 5., 6., 6.],\n        [6., 5., 6., 6.],\n        [6., 5., 6., 6.],\n        [6., 5., 6., 6.]])"
+  },
+  {
+    "objectID": "posts/pytorch-tensors/pytorch-tensors.html#bridge-with-numpy",
+    "href": "posts/pytorch-tensors/pytorch-tensors.html#bridge-with-numpy",
+    "title": "Pytorch Tensors",
+    "section": "Bridge with Numpy",
+    "text": "Bridge with Numpy\nCPU에 있는 tensor와 Numpy array는 메모리 위치를 공유하고 있어서, 하나를 바꾼다면 다른 하나도 바뀐다.\n\nt = torch.ones(5)\nprint(f\"t: {t}\")\nn = t.numpy()\nprint(f\"n: {n}\")\n\nt: tensor([1., 1., 1., 1., 1.])\nn: [1. 1. 1. 1. 1.]\n\n\n\nt.add_(1)\nprint(f\"t: {t}\")\nprint(f\"n: {n}\")\n\nt: tensor([2., 2., 2., 2., 2.])\nn: [2. 2. 2. 2. 2.]\n\n\n\nNumpy array to Tensor\n\nn = np.ones(5)\nt = torch.from_numpy(n)\nprint(f\"t: {t}\")\nprint(f\"n: {n}\")\n\nt: tensor([1., 1., 1., 1., 1.], dtype=torch.float64)\nn: [1. 1. 1. 1. 1.]\n\n\n\nnp.add(n, 1, out=n)\nprint(f\"t: {t}\")\nprint(f\"n: {n}\")\n\nt: tensor([2., 2., 2., 2., 2.], dtype=torch.float64)\nn: [2. 2. 2. 2. 2.]"
   }
 ]
