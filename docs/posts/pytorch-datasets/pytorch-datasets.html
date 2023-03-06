@@ -203,8 +203,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <p>출처 : <a href="https://pytorch.org/tutorials/beginner/basics/data_tutorial.html">pytorch-datasets-and-dataloaders</a></p>
 <p>데이터를 처리하는 코드는 쉽게 지저분해지고 유지보수하기가 어렵다; PyTorch는 읽기 쉬우면서 모듈성을 위해 dataset 코드를 모델 학습 코드와 분리하기를 원했다. Pytorch는 2가지 데이터 기본요소를 제공한다: <code>torch.utils.data.DataLoader</code> and <code>torch.utils.data.Dataset</code>. 이 라이브러리는 가지고 있는 자체 데이터를 쓸 수 있을 뿐만 아니라 사전 로드된 dataset을 사용할 수 있다. <code>Dataset</code>은 샘플과 그에 대응되는 레이블을 저장하고, <code>DataLoader</code>는 <code>Dataset</code>을 iterable로 감싸 샘플에 쉽게 접근하도록 한다.</p>
-<p>PyTorch 도메인 라이브러리들은 수많은 사전로드된 dataset을 제공하며(FashionMNIST와 같은), 이 dataset은 <code>torch.utils.data.Dataset</code>을 상속하고 특정 데이터에 대한 특별한 함수를 구현한다. 이 dataset은 모델을 프로토타이핑 및 벤치마크에 쓸 수 있다. 여기 참고 : <a href="https://pytorch.org/vision/stable/datasets.html">Image Datasets</a>, <a href="https://pytorch.org/text/stable/datasets.html">Text Datasets</a>, <a href="https://pytorch.org/audio/stable/datasets.html">Audio Datasets</a> ## Loading a Dataset 예시로 TorchVision의 <a href="https://research.zalando.com/project/fashion_mnist/fashion_mnist/">Fashion-MNIST</a> dataset를 사용하자. Fasion-MNIST는 6만 개의 training 샘플과 만 개의 test 샘플을 포함하는 Zalando(독일의 패션 소매 기업) 기사 이미지 dataset이다. 각 샘플은 28x28 크기의 grayscale 이미지로 구성되어 있고 10개의 클래스 중 하나의 레이블을 가진다.</p>
-<p>다음과 같은 parameters를 가지고 <a href="https://pytorch.org/vision/stable/datasets.html#fashion-mnist">FashionMNIST Dataset</a>을 로드할 수 있다. - <code>root</code> 는 train/test 데이터가 저장될 경로 - <code>train</code> 은 training dataset인 지 test dataset 인지 결정 - <code>download=True</code> 는 <code>root</code> 경로에 없을 경우 인터넷으로 다운 받을 지 결정 - <code>transform</code>과 <code>target_transform</code>은 각각 feature와 label 변환을 지정</p>
+<p>PyTorch 도메인 라이브러리들은 수많은 사전로드된 dataset을 제공하며(FashionMNIST와 같은), 이 dataset은 <code>torch.utils.data.Dataset</code>을 상속하고 특정 데이터에 대한 특별한 함수를 구현한다. 이 dataset은 모델을 프로토타이핑 및 벤치마크에 쓸 수 있다. 여기 참고 : <a href="https://pytorch.org/vision/stable/datasets.html">Image Datasets</a>, <a href="https://pytorch.org/text/stable/datasets.html">Text Datasets</a>, <a href="https://pytorch.org/audio/stable/datasets.html">Audio Datasets</a></p>
+<section id="loading-a-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="loading-a-dataset">Loading a Dataset</h2>
+<p>예시로 TorchVision의 <a href="https://research.zalando.com/project/fashion_mnist/fashion_mnist/">Fashion-MNIST</a> dataset를 사용하자. Fasion-MNIST는 6만 개의 training 샘플과 만 개의 test 샘플을 포함하는 Zalando(독일의 패션 소매 기업) 기사 이미지 dataset이다. 각 샘플은 28x28 크기의 grayscale 이미지로 구성되어 있고 10개의 클래스 중 하나의 레이블을 가진다.</p>
+<p>다음과 같은 parameters를 가지고 <a href="https://pytorch.org/vision/stable/datasets.html#fashion-mnist">FashionMNIST Dataset</a>을 로드할 수 있다.</p>
+<ul>
+<li><code>root</code> 는 train/test 데이터가 저장될 경로</li>
+<li><code>train</code> 은 training dataset인 지 test dataset 인지 결정</li>
+<li><code>download=True</code> 는 <code>root</code> 경로에 없을 경우 인터넷으로 다운 받을 지 결정</li>
+<li><code>transform</code>과 <code>target_transform</code>은 각각 feature와 label 변환을 지정</li>
+</ul>
 <div class="cell" data-outputid="d232466f-cfe0-45c7-df70-a3aa33dc79cd">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.utils.data <span class="im">import</span> Dataset</span>
@@ -227,6 +236,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    transform<span class="op">=</span>ToTensor()</span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
 <section id="iterating-and-visualizing-the-dataset" class="level2">
 <h2 class="anchored" data-anchor-id="iterating-and-visualizing-the-dataset">Iterating and Visualizing the Dataset</h2>
 <p>list처럼 <code>Datasets</code>에 index로 접근할 수 있다. <code>matplotlib</code>을 사용해 몇몇 샘플을 살펴보면 다음과 같다.</p>

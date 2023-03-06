@@ -46,7 +46,14 @@
     "href": "posts/pytorch-datasets/pytorch-datasets.html",
     "title": "Pytorch Datasets",
     "section": "",
-    "text": "출처 : pytorch-datasets-and-dataloaders\n데이터를 처리하는 코드는 쉽게 지저분해지고 유지보수하기가 어렵다; PyTorch는 읽기 쉬우면서 모듈성을 위해 dataset 코드를 모델 학습 코드와 분리하기를 원했다. Pytorch는 2가지 데이터 기본요소를 제공한다: torch.utils.data.DataLoader and torch.utils.data.Dataset. 이 라이브러리는 가지고 있는 자체 데이터를 쓸 수 있을 뿐만 아니라 사전 로드된 dataset을 사용할 수 있다. Dataset은 샘플과 그에 대응되는 레이블을 저장하고, DataLoader는 Dataset을 iterable로 감싸 샘플에 쉽게 접근하도록 한다.\nPyTorch 도메인 라이브러리들은 수많은 사전로드된 dataset을 제공하며(FashionMNIST와 같은), 이 dataset은 torch.utils.data.Dataset을 상속하고 특정 데이터에 대한 특별한 함수를 구현한다. 이 dataset은 모델을 프로토타이핑 및 벤치마크에 쓸 수 있다. 여기 참고 : Image Datasets, Text Datasets, Audio Datasets ## Loading a Dataset 예시로 TorchVision의 Fashion-MNIST dataset를 사용하자. Fasion-MNIST는 6만 개의 training 샘플과 만 개의 test 샘플을 포함하는 Zalando(독일의 패션 소매 기업) 기사 이미지 dataset이다. 각 샘플은 28x28 크기의 grayscale 이미지로 구성되어 있고 10개의 클래스 중 하나의 레이블을 가진다.\n다음과 같은 parameters를 가지고 FashionMNIST Dataset을 로드할 수 있다. - root 는 train/test 데이터가 저장될 경로 - train 은 training dataset인 지 test dataset 인지 결정 - download=True 는 root 경로에 없을 경우 인터넷으로 다운 받을 지 결정 - transform과 target_transform은 각각 feature와 label 변환을 지정"
+    "text": "출처 : pytorch-datasets-and-dataloaders\n데이터를 처리하는 코드는 쉽게 지저분해지고 유지보수하기가 어렵다; PyTorch는 읽기 쉬우면서 모듈성을 위해 dataset 코드를 모델 학습 코드와 분리하기를 원했다. Pytorch는 2가지 데이터 기본요소를 제공한다: torch.utils.data.DataLoader and torch.utils.data.Dataset. 이 라이브러리는 가지고 있는 자체 데이터를 쓸 수 있을 뿐만 아니라 사전 로드된 dataset을 사용할 수 있다. Dataset은 샘플과 그에 대응되는 레이블을 저장하고, DataLoader는 Dataset을 iterable로 감싸 샘플에 쉽게 접근하도록 한다.\nPyTorch 도메인 라이브러리들은 수많은 사전로드된 dataset을 제공하며(FashionMNIST와 같은), 이 dataset은 torch.utils.data.Dataset을 상속하고 특정 데이터에 대한 특별한 함수를 구현한다. 이 dataset은 모델을 프로토타이핑 및 벤치마크에 쓸 수 있다. 여기 참고 : Image Datasets, Text Datasets, Audio Datasets"
+  },
+  {
+    "objectID": "posts/pytorch-datasets/pytorch-datasets.html#loading-a-dataset",
+    "href": "posts/pytorch-datasets/pytorch-datasets.html#loading-a-dataset",
+    "title": "Pytorch Datasets",
+    "section": "Loading a Dataset",
+    "text": "Loading a Dataset\n예시로 TorchVision의 Fashion-MNIST dataset를 사용하자. Fasion-MNIST는 6만 개의 training 샘플과 만 개의 test 샘플을 포함하는 Zalando(독일의 패션 소매 기업) 기사 이미지 dataset이다. 각 샘플은 28x28 크기의 grayscale 이미지로 구성되어 있고 10개의 클래스 중 하나의 레이블을 가진다.\n다음과 같은 parameters를 가지고 FashionMNIST Dataset을 로드할 수 있다.\n\nroot 는 train/test 데이터가 저장될 경로\ntrain 은 training dataset인 지 test dataset 인지 결정\ndownload=True 는 root 경로에 없을 경우 인터넷으로 다운 받을 지 결정\ntransform과 target_transform은 각각 feature와 label 변환을 지정\n\n\nimport torch\nfrom torch.utils.data import Dataset\nfrom torchvision import datasets\nfrom torchvision.transforms import ToTensor\nimport matplotlib.pyplot as plt\n\n\ntraining_data = datasets.FashionMNIST(\n    root=\"data\",\n    train=True,\n    download=True,\n    transform=ToTensor()\n)\n\ntest_data = datasets.FashionMNIST(\n    root=\"data\",\n    train=False,\n    download=True,\n    transform=ToTensor()\n)"
   },
   {
     "objectID": "posts/pytorch-datasets/pytorch-datasets.html#iterating-and-visualizing-the-dataset",
