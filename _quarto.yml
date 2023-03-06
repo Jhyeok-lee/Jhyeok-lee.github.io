@@ -3,6 +3,8 @@ project:
   output-dir: docs
 website:
   title: "Jhyeok-lee.github.io"
+  site-url: "https://jhyeok-lee.github.io"
+  site-path: "/"
   navbar:
     right:
       - about.qmd
