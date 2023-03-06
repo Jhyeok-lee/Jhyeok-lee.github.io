@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/pytorch-datasets/pytorch-datasets.html",
       "/posts/pytorch-quickstart/quickstart.html",
       "/posts/pytorch-tensors/pytorch-tensors.html"
     ]

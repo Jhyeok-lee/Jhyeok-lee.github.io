@@ -1,19 +1,5 @@
 [
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "이재혁 (Jae Hyeok Lee)"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Jhyeok-lee.github.io",
-    "section": "",
-    "text": "Pytorch Quickstart\n\n\n\n\n\n\n\npytorch\n\n\npytorch-tutorial\n\n\n\n\n\n\n\n\n\n\n\nMar 5, 2023\n\n\n\n\n\n\n\n\nPytorch Tensors\n\n\n\n\n\n\n\npytorch\n\n\npytorch-tutorial\n\n\npytorch-tensor\n\n\n\n\n\n\n\n\n\n\n\nMar 5, 2023\n\n\n\n\n\n\nNo matching items"
-  },
-  {
     "objectID": "posts/pytorch-quickstart/quickstart.html",
     "href": "posts/pytorch-quickstart/quickstart.html",
     "title": "Pytorch Quickstart",
@@ -56,6 +42,41 @@
     "text": "Loading Models\n모델을 load하려면 모델의 구조를 다시 만들고 상태 dictionary를 load한다.\n더 자세한 내용은 Saving & Loading your model 참고.\n\nmodel = NeuralNetwork()\nmodel.load_state_dict(torch.load(\"model.pth\"))\n\n<All keys matched successfully>\n\n\n\nclasses = [\n    \"T-shirt/top\",\n    \"Trouser\",\n    \"Pullover\",\n    \"Dress\",\n    \"Coat\",\n    \"Sandal\",\n    \"Shirt\",\n    \"Sneaker\",\n    \"Bag\",\n    \"Ankle boot\",\n]\n\nmodel.eval()\nx, y = test_data[0][0], test_data[0][1]\nwith torch.no_grad():\n    pred = model(x)\n    predicted, actual = classes[pred[0].argmax(0)], classes[y]\n    print(f'Predicted: \"{predicted}\", Actual: \"{actual}\"')\n\nPredicted: \"Ankle boot\", Actual: \"Ankle boot\""
   },
   {
+    "objectID": "posts/pytorch-datasets/pytorch-datasets.html",
+    "href": "posts/pytorch-datasets/pytorch-datasets.html",
+    "title": "Pytorch Datasets",
+    "section": "",
+    "text": "출처 : pytorch-datasets-and-dataloaders\n데이터를 처리하는 코드는 쉽게 지저분해지고 유지보수하기가 어렵다; PyTorch는 읽기 쉬우면서 모듈성을 위해 dataset 코드를 모델 학습 코드와 분리하기를 원했다. Pytorch는 2가지 데이터 기본요소를 제공한다: torch.utils.data.DataLoader and torch.utils.data.Dataset. 이 라이브러리는 가지고 있는 자체 데이터를 쓸 수 있을 뿐만 아니라 사전 로드된 dataset을 사용할 수 있다. Dataset은 샘플과 그에 대응되는 레이블을 저장하고, DataLoader는 Dataset을 iterable로 감싸 샘플에 쉽게 접근하도록 한다.\nPyTorch 도메인 라이브러리들은 수많은 사전로드된 dataset을 제공하며(FashionMNIST와 같은), 이 dataset은 torch.utils.data.Dataset을 상속하고 특정 데이터에 대한 특별한 함수를 구현한다. 이 dataset은 모델을 프로토타이핑 및 벤치마크에 쓸 수 있다. 여기 참고 : Image Datasets, Text Datasets, Audio Datasets ## Loading a Dataset 예시로 TorchVision의 Fashion-MNIST dataset를 사용하자. Fasion-MNIST는 6만 개의 training 샘플과 만 개의 test 샘플을 포함하는 Zalando(독일의 패션 소매 기업) 기사 이미지 dataset이다. 각 샘플은 28x28 크기의 grayscale 이미지로 구성되어 있고 10개의 클래스 중 하나의 레이블을 가진다.\n다음과 같은 parameters를 가지고 FashionMNIST Dataset을 로드할 수 있다. - root 는 train/test 데이터가 저장될 경로 - train 은 training dataset인 지 test dataset 인지 결정 - download=True 는 root 경로에 없을 경우 인터넷으로 다운 받을 지 결정 - transform과 target_transform은 각각 feature와 label 변환을 지정"
+  },
+  {
+    "objectID": "posts/pytorch-datasets/pytorch-datasets.html#iterating-and-visualizing-the-dataset",
+    "href": "posts/pytorch-datasets/pytorch-datasets.html#iterating-and-visualizing-the-dataset",
+    "title": "Pytorch Datasets",
+    "section": "Iterating and Visualizing the Dataset",
+    "text": "Iterating and Visualizing the Dataset\nlist처럼 Datasets에 index로 접근할 수 있다. matplotlib을 사용해 몇몇 샘플을 살펴보면 다음과 같다.\n\nlabels_map = {\n    0: \"T-Shirt\",\n    1: \"Trouser\",\n    2: \"Pullover\",\n    3: \"Dress\",\n    4: \"Coat\",\n    5: \"Sandal\",\n    6: \"Shirt\",\n    7: \"Sneaker\",\n    8: \"Bag\",\n    9: \"Ankle Boot\",\n}\nfigure = plt.figure(figsize=(8, 8))\ncols, rows = 3, 3\nfor i in range(1, cols * rows + 1):\n    sample_idx = torch.randint(len(training_data), size=(1,)).item()\n    img, label = training_data[sample_idx]\n    figure.add_subplot(rows, cols, i)\n    plt.title(labels_map[label])\n    plt.axis(\"off\")\n    plt.imshow(img.squeeze(), cmap=\"gray\")\nplt.show()"
+  },
+  {
+    "objectID": "posts/pytorch-datasets/pytorch-datasets.html#creating-a-custom-dataset-for-your-files",
+    "href": "posts/pytorch-datasets/pytorch-datasets.html#creating-a-custom-dataset-for-your-files",
+    "title": "Pytorch Datasets",
+    "section": "Creating a Custom Dataset for your files",
+    "text": "Creating a Custom Dataset for your files\nDataset class를 커스텀 하려면 3개의 함수를 반드시 구현해야 한다: __init__, __len__, 그리고 __getitem__. FashionMNIST 이미지는 img_dir에 저장되어 있고, 레이블은 annotations_file에 저장되어 있자고 하자.\n\n__init__ 함수는 Dataset 객체를 초기화할 때 한번 실행된다. 이미지와 레이블 파일이 있는 directory와 transform을 초기화한다.\n__len__ 함수는 dataset의 샘플 수를 리턴한다.\n__getitem__ 함수는 idx를 가지고 dataset의 하나의 샘플을 로드하고 리턴한다. index를 가지고 이미지의 위치를 찾은 다음, read_image를 사용해 tensor로 변환한다. 그 다음에는 대응되는 레이블을 self.img_labels에서 찾은 후 적용할 transfrom 함수고 있다면 적용한다. 마지막에 이미지 tensor와 레이블 tuple을 리턴한다.\n\n\nimport os\nimport pandas as pd\nfrom torchvision.io import read_image\n\nclass CustomImageDataset(Dataset):\n    def __init__(self, annotations_file, img_dir, transform=None, target_transform=None):\n        self.img_labels = pd.read_csv(annotations_file)\n        self.img_dir = img_dir\n        self.transform = transform\n        self.target_transform = target_transform\n\n    def __len__(self):\n        return len(self.img_labels)\n\n    def __getitem__(self, idx):\n        img_path = os.path.join(self.img_dir, self.img_labels.iloc[idx, 0])\n        image = read_image(img_path)\n        label = self.img_labels.iloc[idx, 1]\n        if self.transform:\n            image = self.transform(image)\n        if self.target_transform:\n            label = self.target_transform(label)\n        return image, label"
+  },
+  {
+    "objectID": "posts/pytorch-datasets/pytorch-datasets.html#preparing-your-data-for-training-with-dataloaders",
+    "href": "posts/pytorch-datasets/pytorch-datasets.html#preparing-your-data-for-training-with-dataloaders",
+    "title": "Pytorch Datasets",
+    "section": "Preparing your data for training with DataLoaders",
+    "text": "Preparing your data for training with DataLoaders\nDataset은 dataset의 features와 label을 한번에 하나씩 찾는다. 모델 학습중에는 샘플들을 minibatches로 전달하거나, 모델의 오버피팅을 줄이기 위해 epoch마다 데이터를 reshuffle하거나, 더 빠른 데이터 검색을 위해 Python의 multiprocessing을 사용하고 싶기도 한다.\nDataLoader는 이 기능들을 쉽게 구현한 iterable이다.\n\nfrom torch.utils.data import DataLoader\n\ntrain_dataloader = DataLoader(training_data, batch_size=64, shuffle=True)\ntest_dataloader = DataLoader(test_data, batch_size=64, shuffle=True)"
+  },
+  {
+    "objectID": "posts/pytorch-datasets/pytorch-datasets.html#iterate-through-the-dataloader",
+    "href": "posts/pytorch-datasets/pytorch-datasets.html#iterate-through-the-dataloader",
+    "title": "Pytorch Datasets",
+    "section": "Iterate through the DataLoader",
+    "text": "Iterate through the DataLoader\ndataset을 DataLoader에 전달하면 필요한 만큼 반복할 수 있다. 각 반복(iteration)마다 train_features와 train_labels batch를 리턴한다. (batch_size=64 features와 labels 각각). shuffle=True로 지정하면 모든 배치가 끝날때 마다 데이터가 셔플된다. (finer-grained control은 Samplers 참고)\n\n# Display image and label.\ntrain_features, train_labels = next(iter(train_dataloader))\nprint(f\"Feature batch shape: {train_features.size()}\")\nprint(f\"Labels batch shape: {train_labels.size()}\")\nimg = train_features[0].squeeze()\nlabel = train_labels[0]\nplt.imshow(img, cmap=\"gray\")\nplt.show()\nprint(f\"Label: {label}\")\n\nFeature batch shape: torch.Size([64, 1, 28, 28])\nLabels batch shape: torch.Size([64])\n\n\n\n\n\nLabel: 4"
+  },
+  {
     "objectID": "posts/pytorch-tensors/pytorch-tensors.html",
     "href": "posts/pytorch-tensors/pytorch-tensors.html",
     "title": "Pytorch Tensors",
@@ -89,5 +110,19 @@
     "title": "Pytorch Tensors",
     "section": "Bridge with Numpy",
     "text": "Bridge with Numpy\nCPU에 있는 tensor와 Numpy array는 메모리 위치를 공유하고 있어서, 하나를 바꾼다면 다른 하나도 바뀐다.\n\nt = torch.ones(5)\nprint(f\"t: {t}\")\nn = t.numpy()\nprint(f\"n: {n}\")\n\nt: tensor([1., 1., 1., 1., 1.])\nn: [1. 1. 1. 1. 1.]\n\n\n\nt.add_(1)\nprint(f\"t: {t}\")\nprint(f\"n: {n}\")\n\nt: tensor([2., 2., 2., 2., 2.])\nn: [2. 2. 2. 2. 2.]\n\n\n\nNumpy array to Tensor\n\nn = np.ones(5)\nt = torch.from_numpy(n)\nprint(f\"t: {t}\")\nprint(f\"n: {n}\")\n\nt: tensor([1., 1., 1., 1., 1.], dtype=torch.float64)\nn: [1. 1. 1. 1. 1.]\n\n\n\nnp.add(n, 1, out=n)\nprint(f\"t: {t}\")\nprint(f\"n: {n}\")\n\nt: tensor([2., 2., 2., 2., 2.], dtype=torch.float64)\nn: [2. 2. 2. 2. 2.]"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Jhyeok-lee.github.io",
+    "section": "",
+    "text": "Pytorch Datasets\n\n\n\n\n\n\n\npytorch\n\n\npytorch-tutorial\n\n\npytorch-dataset\n\n\n\n\n\n\n\n\n\n\n\nMar 6, 2023\n\n\n\n\n\n\n\n\nPytorch Quickstart\n\n\n\n\n\n\n\npytorch\n\n\npytorch-tutorial\n\n\n\n\n\n\n\n\n\n\n\nMar 5, 2023\n\n\n\n\n\n\n\n\nPytorch Tensors\n\n\n\n\n\n\n\npytorch\n\n\npytorch-tutorial\n\n\npytorch-tensor\n\n\n\n\n\n\n\n\n\n\n\nMar 5, 2023\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "이재혁 (Jae Hyeok Lee)"
   }
 ]
