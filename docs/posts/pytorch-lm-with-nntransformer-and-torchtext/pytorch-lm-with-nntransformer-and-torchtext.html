@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2023-03-11">
+
+<title>Jhyeok-lee.github.io - Language Modeling with nn.Transformer and Torchtext</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Jhyeok-lee.github.io</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com"><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Language Modeling with nn.Transformer and Torchtext</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">pytorch</div>
+                <div class="quarto-category">pytorch-tutorial</div>
+                <div class="quarto-category">nlp</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">March 11, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<p>출처 : <a href="https://pytorch.org/tutorials/beginner/basics/transforms_tutorial.html">PyTorch Transformer</a></p>
+<p>이 튜토리얼은 <a href="https://pytorch.org/docs/stable/generated/torch.nn.Transformer.html">nn.Transformer</a> 모듈을 사용해서 seq2seq 학습에 대해 다룬다.</p>
+<p>PyTorch 1.2부터 <a href="https://arxiv.org/pdf/1706.03762.pdf">Attention is All You Need</a> 논문에 기반한 표준 transformer 모듈이 포함된다. Recurrent Neural Networks (RNNs)와 비교해서, transformer 모델이 seq2seq 작업에 더 효과적이라는 것이 증명되었다. <code>nn.Transformer</code> 모듈은 input과 output 사이의 전역 의존성을 이끌어내기 위해 attention mechchanism (<a href="https://pytorch.org/docs/stable/generated/torch.nn.MultiheadAttention.html">nn.MultiheadAttention</a>에서 구현)을 사용한다. <code>nn.Transformer</code> 모듈은 고도로 모듈화가 되어 있어 단일 컴포넌트 (예, <a href="https://pytorch.org/docs/stable/generated/torch.nn.TransformerEncoder.html">nn.TransformerEncoder</a>)를 쉽게 조정하거나 구성할 수 있다.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pytorch.org/tutorials/_images/transformer_architecture.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">transformer</figcaption><p></p>
+</figure>
+</div>
+<section id="define-the-model" class="level2">
+<h2 class="anchored" data-anchor-id="define-the-model">Define the model</h2>
+<p>이 튜토리얼에서, language modeling 작업용으로 <code>nn.TransformerEncoder</code>를 학습한다. Language modeling 작업이란 주어진 단어(또는 단어 sequence)가 앞의 단어 sequence를 따를 가능성에 대한 확률을 구한다. 우선 토큰 sequence는 embedding layer로 전달된 다음, 단어 순서를 설명하기 위해 positional encoding layer로 전달된다 (자세한 설명은 다음 문단에). <code>nn.TransformerEncoder</code>는 여러 개의 <a href="https://pytorch.org/docs/stable/generated/torch.nn.TransformerEncoderLayer.html">nn.TransformerEncoderLayer</a>로 이루어져 있다. input sequence와 함께 정사각형 attention mask가 필요한데, 왜냐하면 <code>nn.TransformerEncoder</code>의 self-attention layer는 input sequence의 앞부분에만 적용되기 때문이다. Language modeling 작업에서 뒷부분의 토큰은 마스킹되어야 한다. output 단어들의 확률분포를 생성하기 위해서는, <code>nn.TransformerEncoder</code>의 output은 linear layer를 통과한 후 log-softmax function을 거친다.</p>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tempfile <span class="im">import</span> TemporaryDirectory</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Tuple</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch <span class="im">import</span> nn, Tensor</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn.functional <span class="im">as</span> F</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.nn <span class="im">import</span> TransformerEncoder, TransformerEncoderLayer</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.utils.data <span class="im">import</span> dataset</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> TransformerModel(nn.Module):</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, ntoken: <span class="bu">int</span>, d_model: <span class="bu">int</span>, nhead: <span class="bu">int</span>, d_hid: <span class="bu">int</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>                 nlayers: <span class="bu">int</span>, dropout: <span class="bu">float</span> <span class="op">=</span> <span class="fl">0.5</span>):</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.model_type <span class="op">=</span> <span class="st">'Transformer'</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.pos_encoder <span class="op">=</span> PositionalEncoding(d_model, dropout)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        encoder_layers <span class="op">=</span> TransformerEncoderLayer(d_model, nhead, d_hid, dropout)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.transformer_encoder <span class="op">=</span> TransformerEncoder(encoder_layers, nlayers)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.encoder <span class="op">=</span> nn.Embedding(ntoken, d_model)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.d_model <span class="op">=</span> d_model</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.decoder <span class="op">=</span> nn.Linear(d_model, ntoken)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.init_weights()</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> init_weights(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>        initrange <span class="op">=</span> <span class="fl">0.1</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.encoder.weight.data.uniform_(<span class="op">-</span>initrange, initrange)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.decoder.bias.data.zero_()</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.decoder.weight.data.uniform_(<span class="op">-</span>initrange, initrange)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, src: Tensor, src_mask: Tensor) <span class="op">-&gt;</span> Tensor:</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co">        Args:</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="co">            src: Tensor, shape [seq_len, batch_size]</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="co">            src_mask: Tensor, shape [seq_len, seq_len]</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="co">        Returns:</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="co">            output Tensor of shape [seq_len, batch_size, ntoken]</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>        src <span class="op">=</span> <span class="va">self</span>.encoder(src) <span class="op">*</span> math.sqrt(<span class="va">self</span>.d_model)</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>        src <span class="op">=</span> <span class="va">self</span>.pos_encoder(src)</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>        output <span class="op">=</span> <span class="va">self</span>.transformer_encoder(src, src_mask)</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>        output <span class="op">=</span> <span class="va">self</span>.decoder(output)</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> output</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> generate_square_subsequent_mask(sz: <span class="bu">int</span>) <span class="op">-&gt;</span> Tensor:</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Generates an upper-triangular matrix of -inf, with zeros on diag."""</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> torch.triu(torch.ones(sz, sz) <span class="op">*</span> <span class="bu">float</span>(<span class="st">'-inf'</span>), diagonal<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>PositionalEncoding</code> 모듈은 sequence에 있는 토큰들의 상대적이거나 절대적인 위치에 대한 정보를 주입한다. Positional encodings는 embeddings와 동일한 dimension을 갖고 있어서 같이 더할 수 있다. 아래의 코드는 <code>sin</code>, <code>cos</code> functions를 사용해서 positional encoding에 대한 구현이다.</p>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> PositionalEncoding(nn.Module):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, d_model: <span class="bu">int</span>, dropout: <span class="bu">float</span> <span class="op">=</span> <span class="fl">0.1</span>, max_len: <span class="bu">int</span> <span class="op">=</span> <span class="dv">5000</span>):</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.dropout <span class="op">=</span> nn.Dropout(p<span class="op">=</span>dropout)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        position <span class="op">=</span> torch.arange(max_len).unsqueeze(<span class="dv">1</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        div_term <span class="op">=</span> torch.exp(torch.arange(<span class="dv">0</span>, d_model, <span class="dv">2</span>) <span class="op">*</span> (<span class="op">-</span>math.log(<span class="fl">10000.0</span>) <span class="op">/</span> d_model))</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        pe <span class="op">=</span> torch.zeros(max_len, <span class="dv">1</span>, d_model)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        pe[:, <span class="dv">0</span>, <span class="dv">0</span>::<span class="dv">2</span>] <span class="op">=</span> torch.sin(position <span class="op">*</span> div_term)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        pe[:, <span class="dv">0</span>, <span class="dv">1</span>::<span class="dv">2</span>] <span class="op">=</span> torch.cos(position <span class="op">*</span> div_term)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.register_buffer(<span class="st">'pe'</span>, pe)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x: Tensor) <span class="op">-&gt;</span> Tensor:</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co">        Args:</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">            x: Tensor, shape [seq_len, batch_size, embedding_dim]</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> x <span class="op">+</span> <span class="va">self</span>.pe[:x.size(<span class="dv">0</span>)]</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.dropout(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="load-and-batch-data" class="level2">
+<h2 class="anchored" data-anchor-id="load-and-batch-data">Load and batch data</h2>
+<p>이 튜토리얼은 Wikitext-2 dataset를 생성하기 위해 <code>torchtext</code>를 사용한다. torchtext datasets를 사용하기 위해서는 다음과 같은 명령어로 torchdata를 설치한다</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>bash</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>pip install torchdata</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>vocab 객체는 train dataset을 기반으로 만들고 토큰을 수치화해서 tensor로 만들기위해 사용된다. Wikitext-2는 희귀한 토큰을 <code>&lt;unk&gt;</code>로 표현한다.</p>
+<p>1-D vector로 이루어진 순서 데이터가 주어지면, <code>batchify()</code>는 데이터를 <code>batch_size</code> column 수만큼 배열한다. 만약 데이터가 <code>batch_size</code> column 수만큼 나누어 떨이지지 않는다면, 데이터를 자른다. 예를들어, 길이가 26인 알파벳 data가 있고 <code>batch_size=4</code>라면, 알파벳을 길이가 6인 sequences 4개를 만든다.</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+A &amp; B &amp; C &amp; \cdots &amp; X &amp; Y &amp; Z
+\end{bmatrix}
+\Rightarrow
+\begin{bmatrix}
+\begin{bmatrix}
+A \\ B \\ C \\ D \\ E \\ F
+\end{bmatrix}
+\begin{bmatrix}
+G \\ H \\ I \\ J \\ K \\ L
+\end{bmatrix}
+\begin{bmatrix}
+M \\ N \\ O \\ P \\ Q \\ R
+\end{bmatrix}
+\begin{bmatrix}
+S \\ T \\ U \\ V \\ W \\ X
+\end{bmatrix}
+\end{bmatrix}
+\]</span></p>
+<p>Batching은 병렬처리를 가능하게 하지만, 각 column을 독립척으로 처리한다. 그래서 <code>G</code>와 <code>F</code>의 의존성은 위의 예에서 학습할 수 없다.</p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torchtext.datasets <span class="im">import</span> WikiText2</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torchtext.data.utils <span class="im">import</span> get_tokenizer</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torchtext.vocab <span class="im">import</span> build_vocab_from_iterator</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>train_iter <span class="op">=</span> WikiText2(split<span class="op">=</span><span class="st">'train'</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>tokenizer <span class="op">=</span> get_tokenizer(<span class="st">'basic_english'</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>vocab <span class="op">=</span> build_vocab_from_iterator(<span class="bu">map</span>(tokenizer, train_iter), specials<span class="op">=</span>[<span class="st">'&lt;unk&gt;'</span>])</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>vocab.set_default_index(vocab[<span class="st">'&lt;unk&gt;'</span>])</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> data_process(raw_text_iter: dataset.IterableDataset) <span class="op">-&gt;</span> Tensor:</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Converts raw text into a flat Tensor."""</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> [torch.tensor(vocab(tokenizer(item)), dtype<span class="op">=</span>torch.<span class="bu">long</span>) <span class="cf">for</span> item <span class="kw">in</span> raw_text_iter]</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> torch.cat(<span class="bu">tuple</span>(<span class="bu">filter</span>(<span class="kw">lambda</span> t: t.numel() <span class="op">&gt;</span> <span class="dv">0</span>, data)))</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co"># train_iter was "consumed" by the process of building the vocab,</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co"># so we have to create it again</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>train_iter, val_iter, test_iter <span class="op">=</span> WikiText2()</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>train_data <span class="op">=</span> data_process(train_iter)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>val_data <span class="op">=</span> data_process(val_iter)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>test_data <span class="op">=</span> data_process(test_iter)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>device <span class="op">=</span> torch.device(<span class="st">'cuda'</span> <span class="cf">if</span> torch.cuda.is_available() <span class="cf">else</span> <span class="st">'cpu'</span>)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> batchify(data: Tensor, bsz: <span class="bu">int</span>) <span class="op">-&gt;</span> Tensor:</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Divides the data into bsz separate sequences, removing extra elements</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co">    that wouldn't cleanly fit.</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co">        data: Tensor, shape [N]</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co">        bsz: int, batch size</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="co">        Tensor of shape [N // bsz, bsz]</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    seq_len <span class="op">=</span> data.size(<span class="dv">0</span>) <span class="op">//</span> bsz</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> data[:seq_len <span class="op">*</span> bsz]</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> data.view(bsz, seq_len).t().contiguous()</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> data.to(device)</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>batch_size <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>eval_batch_size <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>train_data <span class="op">=</span> batchify(train_data, batch_size)  <span class="co"># shape [seq_len, batch_size]</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>val_data <span class="op">=</span> batchify(val_data, eval_batch_size)</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>test_data <span class="op">=</span> batchify(test_data, eval_batch_size)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="functions-to-generate-input-and-target-sequence" class="level3">
+<h3 class="anchored" data-anchor-id="functions-to-generate-input-and-target-sequence">Functions to generate input and target sequence</h3>
+<p><code>get_batch()</code>는 transformer model을 위한 input-target sequences를 생성한다. <code>get_batch()</code>는 소스 데이터를 <code>bptt</code> 길이의 chunks로 세분화한다. Language modeling 작업을 위해, model은 <code>Target</code>이라는 미래 단어들이 필요하다. 예를들어, <code>bptt</code>가 2라면, <code>i=0</code>일 때의 2개의 미래 단어를 얻을 수 있다.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://pytorch.org/tutorials/_images/transformer_input_target.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">matrix</figcaption><p></p>
+</figure>
+</div>
+<p>(batch마다 2개의 단어를 묶어야 하므로 input (A,B), target (B,C), input (G, H), target (H, I), … 로 row가 아니라 column으로 같이 묶여야 한다. 위의 행렬에 오류 있음.)</p>
+<p>chunks는 데이터의 0번째 차원에 있다는 것을 유의해야한다. batch는 1번째 차원에 있다.</p>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>bptt <span class="op">=</span> <span class="dv">35</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_batch(source: Tensor, i: <span class="bu">int</span>) <span class="op">-&gt;</span> Tuple[Tensor, Tensor]:</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">        source: Tensor, shape [full_seq_len, batch_size]</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">        i: int</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">        tuple (data, target), where data has shape [seq_len, batch_size] and</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">        target has shape [seq_len * batch_size]</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    seq_len <span class="op">=</span> <span class="bu">min</span>(bptt, <span class="bu">len</span>(source) <span class="op">-</span> <span class="dv">1</span> <span class="op">-</span> i)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> source[i:i<span class="op">+</span>seq_len]</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    target <span class="op">=</span> source[i<span class="op">+</span><span class="dv">1</span>:i<span class="op">+</span><span class="dv">1</span><span class="op">+</span>seq_len].reshape(<span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> data, target</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="initiate-an-instance" class="level2">
+<h2 class="anchored" data-anchor-id="initiate-an-instance">Initiate an instance</h2>
+<p>model hyperparameters는 아래에 정의되어 있다. vocab size는 vocab object와 같다.</p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ntokens <span class="op">=</span> <span class="bu">len</span>(vocab)  <span class="co"># size of vocabulary</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>emsize <span class="op">=</span> <span class="dv">200</span>  <span class="co"># embedding dimension</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>d_hid <span class="op">=</span> <span class="dv">200</span>  <span class="co"># dimension of the feedforward network model in nn.TransformerEncoder</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>nlayers <span class="op">=</span> <span class="dv">2</span>  <span class="co"># number of nn.TransformerEncoderLayer in nn.TransformerEncoder</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>nhead <span class="op">=</span> <span class="dv">2</span>  <span class="co"># number of heads in nn.MultiheadAttention</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>dropout <span class="op">=</span> <span class="fl">0.2</span>  <span class="co"># dropout probability</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> TransformerModel(ntokens, emsize, nhead, d_hid, nlayers, dropout).to(device)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="run-the-model" class="level2">
+<h2 class="anchored" data-anchor-id="run-the-model">Run the model</h2>
+<p>학습은 <a href="https://pytorch.org/docs/stable/generated/torch.optim.SGD.html">SGD</a> (stochastic gradient descent) optimizer를 사용하고 loss function으로 <a href="https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html">CrossEntropyLoss</a>를 사용한다. learning rate는 5.0으로 초기화하고 <a href="https://pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.StepLR.html">StepLR</a>을 사용해 schedule을 한다. 학습하는 동안 <a href="https://pytorch.org/docs/stable/generated/torch.nn.utils.clip_grad_norm_.html">nn.utils.clip_grad_norm_</a>을 사용해 gradient exploding을 방지한다.</p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> copy</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>criterion <span class="op">=</span> nn.CrossEntropyLoss()</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>lr <span class="op">=</span> <span class="fl">5.0</span>  <span class="co"># learning rate</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>optimizer <span class="op">=</span> torch.optim.SGD(model.parameters(), lr<span class="op">=</span>lr)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>scheduler <span class="op">=</span> torch.optim.lr_scheduler.StepLR(optimizer, <span class="fl">1.0</span>, gamma<span class="op">=</span><span class="fl">0.95</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> train(model: nn.Module) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    model.train()  <span class="co"># turn on train mode</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    total_loss <span class="op">=</span> <span class="fl">0.</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    log_interval <span class="op">=</span> <span class="dv">200</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    start_time <span class="op">=</span> time.time()</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    src_mask <span class="op">=</span> generate_square_subsequent_mask(bptt).to(device)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    num_batches <span class="op">=</span> <span class="bu">len</span>(train_data) <span class="op">//</span> bptt</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> batch, i <span class="kw">in</span> <span class="bu">enumerate</span>(<span class="bu">range</span>(<span class="dv">0</span>, train_data.size(<span class="dv">0</span>) <span class="op">-</span> <span class="dv">1</span>, bptt)):</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>        data, targets <span class="op">=</span> get_batch(train_data, i)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        seq_len <span class="op">=</span> data.size(<span class="dv">0</span>)</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> seq_len <span class="op">!=</span> bptt:  <span class="co"># only on last batch</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>            src_mask <span class="op">=</span> src_mask[:seq_len, :seq_len]</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>        output <span class="op">=</span> model(data, src_mask)</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>        loss <span class="op">=</span> criterion(output.view(<span class="op">-</span><span class="dv">1</span>, ntokens), targets)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>        optimizer.zero_grad()</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>        loss.backward()</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>        torch.nn.utils.clip_grad_norm_(model.parameters(), <span class="fl">0.5</span>)</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>        optimizer.step()</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>        total_loss <span class="op">+=</span> loss.item()</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> batch <span class="op">%</span> log_interval <span class="op">==</span> <span class="dv">0</span> <span class="kw">and</span> batch <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>            lr <span class="op">=</span> scheduler.get_last_lr()[<span class="dv">0</span>]</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>            ms_per_batch <span class="op">=</span> (time.time() <span class="op">-</span> start_time) <span class="op">*</span> <span class="dv">1000</span> <span class="op">/</span> log_interval</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>            cur_loss <span class="op">=</span> total_loss <span class="op">/</span> log_interval</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>            ppl <span class="op">=</span> math.exp(cur_loss)</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f'| epoch </span><span class="sc">{</span>epoch<span class="sc">:3d}</span><span class="ss"> | </span><span class="sc">{</span>batch<span class="sc">:5d}</span><span class="ss">/</span><span class="sc">{</span>num_batches<span class="sc">:5d}</span><span class="ss"> batches | '</span></span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>                  <span class="ss">f'lr </span><span class="sc">{</span>lr<span class="sc">:02.2f}</span><span class="ss"> | ms/batch </span><span class="sc">{</span>ms_per_batch<span class="sc">:5.2f}</span><span class="ss"> | '</span></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>                  <span class="ss">f'loss </span><span class="sc">{</span>cur_loss<span class="sc">:5.2f}</span><span class="ss"> | ppl </span><span class="sc">{</span>ppl<span class="sc">:8.2f}</span><span class="ss">'</span>)</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>            total_loss <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>            start_time <span class="op">=</span> time.time()</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> evaluate(model: nn.Module, eval_data: Tensor) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>    model.<span class="bu">eval</span>()  <span class="co"># turn on evaluation mode</span></span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>    total_loss <span class="op">=</span> <span class="fl">0.</span></span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>    src_mask <span class="op">=</span> generate_square_subsequent_mask(bptt).to(device)</span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> torch.no_grad():</span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, eval_data.size(<span class="dv">0</span>) <span class="op">-</span> <span class="dv">1</span>, bptt):</span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>            data, targets <span class="op">=</span> get_batch(eval_data, i)</span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>            seq_len <span class="op">=</span> data.size(<span class="dv">0</span>)</span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> seq_len <span class="op">!=</span> bptt:</span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>                src_mask <span class="op">=</span> src_mask[:seq_len, :seq_len]</span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>            output <span class="op">=</span> model(data, src_mask)</span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>            output_flat <span class="op">=</span> output.view(<span class="op">-</span><span class="dv">1</span>, ntokens)</span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>            total_loss <span class="op">+=</span> seq_len <span class="op">*</span> criterion(output_flat, targets).item()</span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> total_loss <span class="op">/</span> (<span class="bu">len</span>(eval_data) <span class="op">-</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>epoch를 돌면서 이때까지 본 것 중 validation loss가 가장 좋다면 모델을 저장한다. 또 각 epoch마다 learning rate를 조절한다.</p>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>best_val_loss <span class="op">=</span> <span class="bu">float</span>(<span class="st">'inf'</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>epochs <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> TemporaryDirectory() <span class="im">as</span> tempdir:</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    best_model_params_path <span class="op">=</span> os.path.join(tempdir, <span class="st">"best_model_params.pt"</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, epochs <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        epoch_start_time <span class="op">=</span> time.time()</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        train(model)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        val_loss <span class="op">=</span> evaluate(model, val_data)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        val_ppl <span class="op">=</span> math.exp(val_loss)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        elapsed <span class="op">=</span> time.time() <span class="op">-</span> epoch_start_time</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">'-'</span> <span class="op">*</span> <span class="dv">89</span>)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f'| end of epoch </span><span class="sc">{</span>epoch<span class="sc">:3d}</span><span class="ss"> | time: </span><span class="sc">{</span>elapsed<span class="sc">:5.2f}</span><span class="ss">s | '</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f'valid loss </span><span class="sc">{</span>val_loss<span class="sc">:5.2f}</span><span class="ss"> | valid ppl </span><span class="sc">{</span>val_ppl<span class="sc">:8.2f}</span><span class="ss">'</span>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">'-'</span> <span class="op">*</span> <span class="dv">89</span>)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> val_loss <span class="op">&lt;</span> best_val_loss:</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>            best_val_loss <span class="op">=</span> val_loss</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>            torch.save(model.state_dict(), best_model_params_path)</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>        scheduler.step()</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    model.load_state_dict(torch.load(best_model_params_path)) <span class="co"># load best model states</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>| epoch   1 |   200/ 2928 batches | lr 5.00 | ms/batch 26.08 | loss  8.23 | ppl  3737.76
+| epoch   1 |   400/ 2928 batches | lr 5.00 | ms/batch 11.58 | loss  6.92 | ppl  1010.80
+| epoch   1 |   600/ 2928 batches | lr 5.00 | ms/batch 11.46 | loss  6.47 | ppl   645.55
+| epoch   1 |   800/ 2928 batches | lr 5.00 | ms/batch 11.28 | loss  6.32 | ppl   555.72
+| epoch   1 |  1000/ 2928 batches | lr 5.00 | ms/batch 11.52 | loss  6.20 | ppl   493.80
+| epoch   1 |  1200/ 2928 batches | lr 5.00 | ms/batch 11.46 | loss  6.17 | ppl   479.33
+| epoch   1 |  1400/ 2928 batches | lr 5.00 | ms/batch 11.43 | loss  6.12 | ppl   455.35
+| epoch   1 |  1600/ 2928 batches | lr 5.00 | ms/batch 11.58 | loss  6.11 | ppl   451.57
+| epoch   1 |  1800/ 2928 batches | lr 5.00 | ms/batch 11.61 | loss  6.04 | ppl   419.10
+| epoch   1 |  2000/ 2928 batches | lr 5.00 | ms/batch 11.65 | loss  6.02 | ppl   412.79
+| epoch   1 |  2200/ 2928 batches | lr 5.00 | ms/batch 11.67 | loss  5.90 | ppl   364.81
+| epoch   1 |  2400/ 2928 batches | lr 5.00 | ms/batch 11.43 | loss  5.98 | ppl   393.81
+| epoch   1 |  2600/ 2928 batches | lr 5.00 | ms/batch 11.53 | loss  5.96 | ppl   386.26
+| epoch   1 |  2800/ 2928 batches | lr 5.00 | ms/batch 11.36 | loss  5.88 | ppl   356.50
+-----------------------------------------------------------------------------------------
+| end of epoch   1 | time: 38.00s | valid loss  5.78 | valid ppl   325.14
+-----------------------------------------------------------------------------------------
+| epoch   2 |   200/ 2928 batches | lr 4.75 | ms/batch 11.61 | loss  5.87 | ppl   355.89
+| epoch   2 |   400/ 2928 batches | lr 4.75 | ms/batch 11.62 | loss  5.86 | ppl   349.88
+| epoch   2 |   600/ 2928 batches | lr 4.75 | ms/batch 11.48 | loss  5.67 | ppl   288.70
+| epoch   2 |   800/ 2928 batches | lr 4.75 | ms/batch 11.40 | loss  5.71 | ppl   301.53
+| epoch   2 |  1000/ 2928 batches | lr 4.75 | ms/batch 11.54 | loss  5.66 | ppl   287.14
+| epoch   2 |  1200/ 2928 batches | lr 4.75 | ms/batch 11.68 | loss  5.69 | ppl   294.82
+| epoch   2 |  1400/ 2928 batches | lr 4.75 | ms/batch 11.46 | loss  5.69 | ppl   297.15
+| epoch   2 |  1600/ 2928 batches | lr 4.75 | ms/batch 11.45 | loss  5.72 | ppl   303.57
+| epoch   2 |  1800/ 2928 batches | lr 4.75 | ms/batch 11.51 | loss  5.65 | ppl   285.06
+| epoch   2 |  2000/ 2928 batches | lr 4.75 | ms/batch 11.31 | loss  5.66 | ppl   288.08
+| epoch   2 |  2200/ 2928 batches | lr 4.75 | ms/batch 11.41 | loss  5.55 | ppl   258.10
+| epoch   2 |  2400/ 2928 batches | lr 4.75 | ms/batch 11.52 | loss  5.65 | ppl   284.08
+| epoch   2 |  2600/ 2928 batches | lr 4.75 | ms/batch 11.59 | loss  5.64 | ppl   282.13
+| epoch   2 |  2800/ 2928 batches | lr 4.75 | ms/batch 11.51 | loss  5.57 | ppl   262.94
+-----------------------------------------------------------------------------------------
+| end of epoch   2 | time: 35.02s | valid loss  5.67 | valid ppl   290.63
+-----------------------------------------------------------------------------------------
+| epoch   3 |   200/ 2928 batches | lr 4.51 | ms/batch 11.32 | loss  5.60 | ppl   271.62
+| epoch   3 |   400/ 2928 batches | lr 4.51 | ms/batch 11.36 | loss  5.63 | ppl   277.62
+| epoch   3 |   600/ 2928 batches | lr 4.51 | ms/batch 11.55 | loss  5.43 | ppl   227.22
+| epoch   3 |   800/ 2928 batches | lr 4.51 | ms/batch 11.58 | loss  5.48 | ppl   240.90
+| epoch   3 |  1000/ 2928 batches | lr 4.51 | ms/batch 11.22 | loss  5.44 | ppl   229.37
+| epoch   3 |  1200/ 2928 batches | lr 4.51 | ms/batch 11.36 | loss  5.48 | ppl   239.41
+| epoch   3 |  1400/ 2928 batches | lr 4.51 | ms/batch 11.41 | loss  5.49 | ppl   241.50
+| epoch   3 |  1600/ 2928 batches | lr 4.51 | ms/batch 11.32 | loss  5.52 | ppl   248.71
+| epoch   3 |  1800/ 2928 batches | lr 4.51 | ms/batch 11.37 | loss  5.46 | ppl   235.82
+| epoch   3 |  2000/ 2928 batches | lr 4.51 | ms/batch 11.32 | loss  5.48 | ppl   240.72
+| epoch   3 |  2200/ 2928 batches | lr 4.51 | ms/batch 11.28 | loss  5.35 | ppl   211.17
+| epoch   3 |  2400/ 2928 batches | lr 4.51 | ms/batch 11.23 | loss  5.46 | ppl   234.29
+| epoch   3 |  2600/ 2928 batches | lr 4.51 | ms/batch 11.37 | loss  5.46 | ppl   235.63
+| epoch   3 |  2800/ 2928 batches | lr 4.51 | ms/batch 11.36 | loss  5.40 | ppl   221.16
+-----------------------------------------------------------------------------------------
+| end of epoch   3 | time: 34.61s | valid loss  5.62 | valid ppl   276.85
+-----------------------------------------------------------------------------------------</code></pre>
+</div>
+</div>
+</section>
+<section id="evaluate-the-best-model-on-the-test-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="evaluate-the-best-model-on-the-test-dataset">Evaluate the best model on the test dataset</h2>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>test_loss <span class="op">=</span> evaluate(model, test_data)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>test_ppl <span class="op">=</span> math.exp(test_loss)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'='</span> <span class="op">*</span> <span class="dv">89</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'| End of training | test loss </span><span class="sc">{</span>test_loss<span class="sc">:5.2f}</span><span class="ss"> | '</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f'test ppl </span><span class="sc">{</span>test_ppl<span class="sc">:8.2f}</span><span class="ss">'</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'='</span> <span class="op">*</span> <span class="dv">89</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>=========================================================================================
+| End of training | test loss  5.53 | test ppl   252.38
+=========================================================================================</code></pre>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/pytorch-lm-with-nntransformer-and-torchtext/pytorch-lm-with-nntransformer-and-torchtext.html",
       "/posts/pytorch-datasets/pytorch-datasets.html",
       "/posts/pytorch-quickstart/quickstart.html",
       "/posts/pytorch-tensors/pytorch-tensors.html"
